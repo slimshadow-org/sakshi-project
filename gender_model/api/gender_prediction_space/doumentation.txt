@@ -1,0 +1,162 @@
+Indian Name Gender Prediction API Documentation
+
+Endpoint Summary:
+
+This API provides two endpoints for predicting the gender of Indian names based on a pre-trained Convolutional Neural Network (CNN) model.
+
+/ (Root Endpoint)
+
+Method: GET
+
+Description: Returns a welcome message.
+
+Response:
+
+Type: string
+
+Example: "Welcome to the Indian Name Gender Prediction API. Use the /predict endpoint."
+
+/predict (Batch Prediction)
+
+Method: POST
+
+Description: Predicts the gender for a list of names.
+
+Request Body:
+
+Type: JSON
+
+Fields:
+
+names (required): A list of strings, where each string is an Indian name. At least one name must be provided.
+
+threshold (optional): A floating-point number between 0.0 and 1.0 (inclusive). This represents the probability threshold for classifying a name as "Male". If the predicted probability of being male is greater than or equal to this threshold, the name is classified as "Male"; otherwise, it's classified as "Female". Default value is 0.5.
+
+Example:
+{
+"names": ["Aarav", "Anika", "Rahul", "Priya"],
+"threshold": 0.6
+}
+
+Response:
+
+Type: JSON
+
+Fields:
+
+predictions: A list of dictionaries. Each dictionary contains the prediction results for a single name.
+
+name: The input name.
+
+predicted_gender: The predicted gender ("Male" or "Female").
+
+male_probability: The predicted probability that the name is male (a value between 0.0 and 1.0).
+
+confidence: The model's confidence in the prediction. This is equal to male_probability if predicted_gender is "Male", and 1 - male_probability if predicted_gender is "Female".
+
+Example:
+{
+"predictions": [
+{
+"name": "Aarav",
+"predicted_gender": "Male",
+"male_probability": 0.92,
+"confidence": 0.92
+},
+{
+"name": "Anika",
+"predicted_gender": "Female",
+"male_probability": 0.08,
+"confidence": 0.92
+},
+{
+"name": "Rahul",
+"predicted_gender": "Male",
+"male_probability": 0.85,
+"confidence": 0.85
+},
+{
+"name": "Priya",
+"predicted_gender": "Female",
+"male_probability": 0.15,
+"confidence": 0.85
+}
+]
+}
+
+Error Handling:
+
+If an error occurs during processing (e.g., an internal server error), the API will return an HTTP 500 status code with a descriptive error message in the response body.
+
+/predict_single (Single Prediction)
+
+Method: GET
+
+Description: Predicts the gender for a single name provided as a query parameter.
+
+Parameters:
+
+name (required): The name to predict (string). Provided as a query parameter in the URL.
+
+threshold (optional): A floating-point number between 0.0 and 1.0. The probability threshold for classifying as male. Default value is 0.5. Provided as a query parameter.
+
+Example URL:
+https://sameernotes-gender-prediction-space.hf.space/predict_single?name=Rajesh&threshold=0.7
+
+Response:
+
+Type: JSON
+
+Fields:
+
+name: The input name.
+
+predicted_gender: The predicted gender ("Male" or "Female").
+
+male_probability: The predicted probability of being male.
+
+confidence: The model's confidence in the prediction.
+
+Example:
+{
+"name": "Rajesh",
+"predicted_gender": "Male",
+"male_probability": 0.88,
+"confidence": 0.88
+}
+
+Error Handling:
+
+If an error occurs, returns an HTTP 500 status code with an error message.
+
+Example Usage (using curl):
+
+Batch Prediction (/predict):
+
+curl -X POST -H "Content-Type: application/json" -d '{"names": ["Sita", "Ram", "Lakshman"], "threshold": 0.4}' https://sameernotes-gender-prediction-space.hf.space/predict
+
+Single Prediction (/predict_single):
+
+curl "https://sameernotes-gender-prediction-space.hf.space/predict_single?name=Geeta&threshold=0.6"
+
+Example Usage (using Python requests):
+
+import requests
+
+Batch prediction
+
+response = requests.post("https://sameernotes-gender-prediction-space.hf.space/predict", json={"names": ["Amit", "Sunita"], "threshold": 0.5})
+print(response.json())
+
+Single prediction
+
+response = requests.get("https://sameernotes-gender-prediction-space.hf.space/predict_single?name=Kiran&threshold=0.7")
+print(response.json())
+
+Notes:
+
+The API is case-insensitive (names are converted to lowercase internally).
+
+The model was trained on Indian names. Accuracy may be lower for names from other cultures.
+
+The confidence score represents the model's certainty in its prediction. Higher confidence scores indicate a stronger prediction.

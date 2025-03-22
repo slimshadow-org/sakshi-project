@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi OCR App - Home</title>
+    <link rel="stylesheet" href="style.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <div class="container" id="app-container">
+        <header>
+            <nav>
+                <a href="home.html"class="active">Home</a>
+                <a href="index.html">OCR </a>
+                
+                <a href="features.html">Key Features</a>
+                <a href="feedback.html">Feedback</a>
+                <a href="contact.html">Contact Us</a>
+            </nav>
+            <h1>Hindi OCR Application</h1>
+            <p class="subtitle">Convert Images to Hindi Text with Ease</p>
+            <p class="attribution">Powered by Sakshi's Hindi OCR Engine</p>
+            <button id="logoutButton" class="logout-button button-secondary">Logout</button>
+        </header>
+
+        <div class="main-content">
+            <!-- Welcome Section -->
+            <div class="welcome">
+                <h2>Welcome to Hindi OCR</h2>
+                <p>Upload an image to extract Hindi text instantly!</p>
+            </div>
+
+            <!-- How to Use Section -->
+            <div class="how-to-use">
+                <h2>How to Use</h2>
+                <ol>
+                    <li>Register with your mail id.</li>
+
+                    <li>Click the **Choose File** button below to upload an image containing Hindi text.</li>
+                    <li>Press the **Process Image** button to start text extraction.</li>
+                    <li>Wait for the system to analyze the image and extract the text.</li>
+                    <li>Copy and use the extracted text as needed.</li>
+                    <li>Provide feedback to help improve the system.</li>
+                </ol>
+            </div>
+
+        </div>
+
+        <div class="credits">
+            <p>Powered by <strong>D SAKSHI</strong> (MCA Final Year BIT Durg, Chhattisgarh) | © SlimShadow Org. All Rights Reserved.</p>
+        </div>
+    </div>
+
+<script>
+    document.getElementById("logoutButton").addEventListener("click", function() {
+        // Redirect to index.html when the logout button is clicked
+        window.location.href = "index.html";
+    });
+</script>
+
+</body>
+</html>

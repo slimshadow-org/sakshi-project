@@ -1,0 +1,31 @@
+i have created an dataset and uploaded to google colab  such as
+
+/content/indian-gender-identification/Indian-Female-Names.csv
+
+inside this file
+
+name,gender,race
+shivani,f,indian
+isha,f,indian
+smt shyani devi,f,indian
+divya,f,indian
+mansi,f,indian ...... upto 14k
+
+
+
+/content/indian-gender-identification/Indian-Male-Names.csv
+
+name,gender,race
+barjraj,m,indian
+ramdin verma,m,indian
+sharat chandran,m,indian
+birender mandal,m,indian
+amit,m,indian .................. upto 14k 
+
+i want to create and train a model which tells the gender and origin (well here all are indians)  by name i have set run time to t4 gpu so use its full potential
+
+
+
+i when user sign up they enter their name so what you have to do is use this api model so that when enter their names  the api tells wether they are males or females
+
+i have attached all the necessary files with you

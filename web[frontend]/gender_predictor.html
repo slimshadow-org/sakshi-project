@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name Gender Predictor</title>
+    <style>
+        /* ---  REUSABLE STYLES (from translation.html) --- */
+        :root {
+            --primary-color: #4a90e2;  /*  Consistent primary color */
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Consistent font */
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Consistent background */
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        /* --- TAB STYLES --- */
+        .tab {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border: none;
+            background: none;
+        }
+
+        .tab button {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab button:hover {
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .tab button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tabcontent {
+            display: none;  /*  Initially hidden */
+            padding: 2rem;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+        /* --- END TAB STYLES --- */
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e1e8ed;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+
+        /* --- RESULT STYLES (from translation.html)--- */
+        #results {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-header {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .result-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+      .result-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* --- ERROR MESSAGE --- */
+        #error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .tab button {
+                padding: 0.8rem;
+                font-size: 1rem;
+            }
+
+            .tabcontent {
+                padding: 1rem;
+            }
+        }
+    .credits {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--text-color);
+        font-size: 0.875rem;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Name Gender Predictor</h1>
+
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'single')">Single Name</button>
+            <button class="tablinks" onclick="openTab(event, 'batch')">Batch Names</button>
+        </div>
+
+        <!-- Single Name Prediction Tab -->
+        <div id="single" class="tabcontent" style="display: block;">
+            <h2>Single Name Prediction</h2>
+            <label for="singleName">Enter a single name:</label>
+            <input type="text" id="singleName" name="singleName" placeholder="e.g., Sakshi">
+            <button id="predictSingleButton">Predict Gender</button>
+
+            <div class="loading-indicator" id="singleLoading">
+                Analyzing name...
+            </div>
+
+            <div id="singleResult" class = "results">
+                 <h3 class="result-header">Prediction Results</h3>
+            </div>
+        </div>
+
+        <!-- Batch Name Prediction Tab -->
+        <div id="batch" class="tabcontent">
+            <h2>Batch Name Prediction</h2>
+            <label for="batchNames">Enter names (comma-separated):</label>
+            <textarea id="batchNames" name="batchNames" rows="4" placeholder="e.g., Sakshi, Sameer, Shweta"></textarea>
+            <button id="predictBatchButton">Predict Multiple Names</button>
+
+            <div class="loading-indicator" id="batchLoading">
+                Analyzing names...
+            </div>
+
+             <div id="batchResults" class = "results">
+                <h3 class="result-header">Prediction Results</h3>
+            </div>
+        </div>
+        <div id="error-message"></div>
+          <div class="credits">
+            <p>Powered by <strong>D SAKSHI</strong> (MCA Final Year BIT Durg, Chhattisgarh)</p>
+            <p>© SlimShadow Org. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "https://sameernotes-gender-prediction-space.hf.space";
+
+        // ---  ELEMENTS ---
+        const singleNameInput = document.getElementById('singleName');
+        const predictSingleButton = document.getElementById('predictSingleButton');
+        const singleResultDiv = document.getElementById('singleResult');
+        const batchNamesInput = document.getElementById('batchNames');
+        const predictBatchButton = document.getElementById('predictBatchButton');
+        const batchResultsDiv = document.getElementById('batchResults');
+        const errorMessageDiv = document.getElementById('error-message');
+        const singleLoadingDiv = document.getElementById('singleLoading'); //  Separate loading indicators
+        const batchLoadingDiv = document.getElementById('batchLoading');
+
+        // --- TAB FUNCTIONALITY ---
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+
+             // Hide results on tab switch
+            singleResultDiv.innerHTML = '';
+            batchResultsDiv.innerHTML = '';
+
+        }
+
+
+        // --- SINGLE PREDICTION ---
+        predictSingleButton.addEventListener('click', async () => {
+            const name = singleNameInput.value.trim();
+
+            if (!name) {
+                showError("Please enter a name.");
+                return;
+            }
+
+            hideError();
+            showLoading(singleLoadingDiv);  //  Show single loading
+            singleResultDiv.innerHTML = ''; // Clear previous results
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/predict_single?name=${encodeURIComponent(name)}&threshold=0.5`);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(`Error: ${errorData.detail || 'An unexpected error occurred.'}`);
+                    return;
+                }
+
+                const data = await response.json();
+                displaySingleResult(data);
+            } catch (error) {
+                showError("An error occurred during prediction. Please try again.");
+                console.error("Prediction error:", error);
+            } finally {
+                hideLoading(singleLoadingDiv); // Hide single loading
+            }
+        });
+
+
+
+        // --- BATCH PREDICTION ---
+       predictBatchButton.addEventListener('click', async () => {
+            const namesString = batchNamesInput.value.trim();
+            const names = namesString.split(',').map(name => name.trim()).filter(name => name !== "");
+
+            if (names.length === 0) {
+                showError("Please enter at least one valid name.");
+                return;
+            }
+
+            hideError();
+            showLoading(batchLoadingDiv); // Show batch loading
+            batchResultsDiv.innerHTML = ''; // Clear previous results.
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/predict`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ names: names, threshold: 0.5 })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(`Error: ${errorData.detail || 'An unexpected error occurred.'}`);
+                    return;
+                }
+
+                const data = await response.json();
+                displayBatchResults(data);
+            } catch (error) {
+                showError("An error occurred during prediction. Please try again.");
+                console.error("Prediction error:", error);
+            } finally {
+                hideLoading(batchLoadingDiv); // Hide batch loading
+            }
+        });
+
+        // --- DISPLAY RESULTS (REFACTORED) ---
+          function displaySingleResult(data) {
+            const resultHTML = `
+                <div class="result-item">
+                   <div class="result-label">Name:</div>
+                   <div>${data.name}</div>
+                </div>
+                 <div class="result-item">
+                    <div class="result-label">Predicted Gender:</div>
+                    <div>${data.predicted_gender}</div>
+                </div>
+                  <div class="result-item">
+                    <div class="result-label">Male Probability:</div>
+                    <div> ${data.male_probability.toFixed(2)}</div>
+                </div>
+                <div class="result-item">
+                  <div class="result-label">Confidence:</div>
+                  <div>${data.confidence.toFixed(2)}</div>
+                </div>
+            `;
+            singleResultDiv.innerHTML = resultHTML;
+        }
+
+
+        function displayBatchResults(data) {
+            let resultsHTML = '';
+            for (const prediction of data.predictions) {
+              resultsHTML += `
+                <div class="result-item">
+                   <div class="result-label">Name:</div>
+                   <div>${prediction.name}</div>
+                </div>
+                 <div class="result-item">
+                    <div class="result-label">Predicted Gender:</div>
+                    <div>${prediction.predicted_gender}</div>
+                </div>
+                  <div class="result-item">
+                    <div class="result-label">Male Probability:</div>
+                    <div> ${prediction.male_probability.toFixed(2)}</div>
+                </div>
+                <div class="result-item">
+                  <div class="result-label">Confidence:</div>
+                  <div>${prediction.confidence.toFixed(2)}</div>
+                </div>
+            `;
+            }
+            batchResultsDiv.innerHTML = resultsHTML;
+        }
+
+
+
+        // --- UTILITY FUNCTIONS ---
+
+        function showError(message) {
+            errorMessageDiv.textContent = message;
+            errorMessageDiv.style.display = 'block';
+              setTimeout(() => {
+                errorMessageDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideError() {
+            errorMessageDiv.style.display = 'none';
+        }
+
+        function showLoading(loadingIndicator) {
+            loadingIndicator.style.display = 'block';
+        }
+
+        function hideLoading(loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

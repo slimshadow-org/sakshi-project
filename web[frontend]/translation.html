@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translation API</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .tab {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border: none;
+            background: none;
+        }
+
+        .tab button {
+            flex: 1;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--primary-color);
+            background: transparent;
+            color: var(--primary-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab button:hover {
+            background: rgba(74, 144, 226, 0.1);
+        }
+
+        .tab button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .tabcontent {
+            display: none;
+            padding: 2rem;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e1e8ed;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .loading-indicator {
+            display: none;
+            text-align: center;
+            color: var(--primary-color);
+            margin: 1rem 0;
+            font-weight: 600;
+        }
+
+        #translation-result, #detection-result {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        #error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .result-header {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .result-item {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .result-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        #translation-options-list {
+            list-style: none;
+            margin-top: 1rem;
+        }
+
+        #translation-options-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        #translation-options-list li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .tab button {
+                padding: 0.8rem;
+                font-size: 1rem;
+            }
+
+            .tabcontent {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Translation & Language Detection</h1>
+
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'translate')">Translate</button>
+            <button class="tablinks" onclick="openTab(event, 'detect')">Detect Language</button>
+        </div>
+
+        <div id="translate" class="tabcontent" style="display: block;">
+            <h2>Text Translation</h2>
+            <label for="text-to-translate">Text to Translate</label>
+            <textarea id="text-to-translate" placeholder="Enter your text here..."></textarea>
+
+            <label for="source-language">Source Language (optional)</label>
+            <input type="text" id="source-language" placeholder="Leave empty for auto-detection">
+
+            <label for="target-language">Target Language</label>
+            <input type="text" id="target-language" placeholder="e.g., Spanish, French, German">
+
+            <button id="translate-button">Translate Text</button>
+
+            <div class="loading-indicator" id="translation-loading">
+                Translating your text...
+            </div>
+
+            <div id="translation-result">
+                <h3 class="result-header">Translation Results</h3>
+                <div class="result-item">
+                    <div class="result-label">Source Language:</div>
+                    <div id="detected-source-language"></div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Target Language:</div>
+                    <div id="translation-target-language"></div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Translated Text:</div>
+                    <div id="translated-text"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="detect" class="tabcontent">
+            <h2>Language Detection</h2>
+            <label for="text-to-detect">Text to Analyze</label>
+            <textarea id="text-to-detect" placeholder="Enter text to detect its language..."></textarea>
+
+            <button id="detect-button">Detect Language</button>
+
+            <div class="loading-indicator" id="detection-loading">
+                Detecting language...
+            </div>
+
+            <div id="detection-result">
+                <h3 class="result-header">Detection Results</h3>
+                <div class="result-item">
+                    <div class="result-label">Detected Language:</div>
+                    <div id="detected-language"></div>
+                </div>
+                <div id="translation-options-container">
+                    <h4 class="result-header">Translation Options</h4>
+                    <ul id="translation-options-list"></ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="error-message"></div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://sameernotes-translation-prediction-space.hf.space';
+        const supportedLanguages = ["Afrikaans","Arabic","Armenian","Azerbaijani","Belarusian","Bosnian","Bulgarian","Catalan","Chinese","Croatian","Czech","Danish","Dutch","English","Estonian","Finnish","French","Galician","German","Greek","Hebrew","Hindi","Hungarian","Icelandic","Indonesian","Italian","Japanese","Kannada","Kazakh","Korean","Latvian","Lithuanian","Macedonian","Malay","Marathi","Maori","Nepali","Norwegian","Persian","Polish","Portuguese","Romanian","Russian","Serbian","Slovak","Slovenian","Spanish","Swahili","Swedish","Tagalog","Tamil","Thai","Turkish","Ukrainian","Urdu","Vietnamese","Welsh"];
+
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        function clearError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+
+        function openTab(evt, tabName) {
+            const tabcontent = document.getElementsByClassName("tabcontent");
+            for (let i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            const tablinks = document.getElementsByClassName("tablinks");
+            for (let i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+
+            document.getElementById('translation-result').style.display = 'none';
+            document.getElementById('detection-result').style.display = 'none';
+        }
+
+        document.getElementById('translate-button').addEventListener('click', async () => {
+            const text = document.getElementById('text-to-translate').value;
+            const sourceLanguage = document.getElementById('source-language').value;
+            const targetLanguage = document.getElementById('target-language').value;
+
+            clearError();
+            document.getElementById('translation-loading').style.display = 'block';
+            document.getElementById('translation-result').style.display = 'none';
+
+            if (!text) {
+                showError('Please enter text to translate.');
+                document.getElementById('translation-loading').style.display = 'none';
+                return;
+            }
+            if (!targetLanguage) {
+                showError('Please enter the target language.');
+                document.getElementById('translation-loading').style.display = 'none';
+                return;
+            }
+
+            if (!supportedLanguages.includes(targetLanguage)) {
+                showError(`Target language '${targetLanguage}' is not supported. Supported languages are: ${supportedLanguages.join(', ')}`);
+                document.getElementById('translation-loading').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        source_language: sourceLanguage || undefined,
+                        target_language: targetLanguage
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(`Translation failed: ${errorData.detail}`);
+                    return;
+                }
+
+                const htmlResponse = await response.text();
+
+                document.getElementById('detected-source-language').textContent = sourceLanguage || "Auto-detected";
+                document.getElementById('translation-target-language').textContent = targetLanguage;
+                document.getElementById('translated-text').innerHTML = htmlResponse;
+                document.getElementById('translation-result').style.display = 'block';
+
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+                console.error('Error during translation:', error);
+            } finally {
+                document.getElementById('translation-loading').style.display = 'none';
+            }
+        });
+
+        document.getElementById('detect-button').addEventListener('click', async () => {
+            const text = document.getElementById('text-to-detect').value;
+
+            clearError();
+            document.getElementById('detection-loading').style.display = 'block';
+            document.getElementById('detection-result').style.display = 'none';
+
+            if (!text) {
+                showError('Please enter text to detect its language.');
+                document.getElementById('detection-loading').style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/detect_language`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'accept': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showError(`Detection failed: ${errorData.detail}`);
+                    return;
+                }
+
+                const data = await response.json();
+                document.getElementById('detected-language').textContent = data.source_language;
+
+                const optionsList = document.getElementById('translation-options-list');
+                optionsList.innerHTML = '';
+
+                if (data.translation_options && typeof data.translation_options === 'object') {
+                    for (const [key, value] of Object.entries(data.translation_options)) {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${key}: ${value}`;
+                        optionsList.appendChild(listItem);
+                    }
+                    document.getElementById('translation-options-container').style.display = 'block';
+                } else {
+                    document.getElementById('translation-options-container').style.display = 'none';
+                }
+
+                document.getElementById('detection-result').style.display = 'block';
+
+            } catch (error) {
+                showError(`Error: ${error.message}`);
+                console.error('Error during language detection:', error);
+            } finally {
+                document.getElementById('detection-loading').style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

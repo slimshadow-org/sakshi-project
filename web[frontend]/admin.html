@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi OCR App - Admin Panel</title>
+    <style>
+        /* ---  REUSABLE STYLES (from translation.html) --- */
+        :root {
+            --primary-color: #4a90e2;  /*  Consistent primary color */
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Consistent font */
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Consistent background */
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+       input[type="text"], input[type="password"], input[type="email"]  {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e1e8ed;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+
+        input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus  {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+        /* --- ERROR MESSAGE --- */
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+            display: none; /* Hidden by default */
+        }
+        /* --- BUTTONS --- */
+        .button-secondary {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+             width: auto;
+        }
+        .button-secondary:hover {
+            background-color: rgba(74, 144, 226, 0.1);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+          /* --- NAVIGATION BAR --- */
+        nav {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 1rem;
+            justify-content: center; /* Center items */
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 1rem;
+        }
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        nav a:hover {
+            background-color: rgba(74, 144, 226, 0.1);
+        }
+         nav a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+           .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .attribution {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+/* --- LOGOUT BUTTON --- */
+        .logout-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: auto; /* Let the button size itself based on content */
+        }
+
+        .logout-button svg {
+            margin-right: 0.5rem;
+        }
+        /* --- ADMIN TABLE STYLES --- */
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem; /* Reduced margin */
+        }
+        .admin-table th, .admin-table td {
+            border: 1px solid #e1e8ed; /* Lighter border */
+            padding: 0.75rem; /* Reduced padding */
+            text-align: left;
+            font-size: 0.9rem; /* Smaller font size */
+        }
+        .admin-table th {
+            background-color: var(--secondary-color);
+            font-weight: 600; /* Use font-weight from variables */
+             color: var(--text-color);
+        }
+        /* --- ADMIN BUTTONS (Pagination) --- */
+        .admin-buttons {
+            display: flex;
+            gap: 0.5rem; /* Reduced gap */
+            justify-content: center;
+            margin-top: 1rem; /* Reduced margin */
+        }
+
+        .admin-buttons button {
+            width: auto;  /* Let buttons size to content */
+            padding: 0.5rem 1rem; /* Smaller padding */
+            font-size: 0.9rem;
+            margin-top: 0; /* Remove top margin from generic button style */
+        }
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+              nav {
+                justify-content: space-between; /* Adjust as needed */
+            }
+
+            nav a {
+                padding: 0.5rem; /* Smaller padding on mobile */
+            }
+             .admin-table th,
+            .admin-table td {
+                padding: 0.5rem;  /*Even smaller padding on mobile*/
+                font-size: 0.8rem;
+            }
+
+            .admin-buttons button {
+                padding: 0.4rem 0.8rem; /*Smaller padding on mobile*/
+                font-size: 0.8rem;
+            }
+        }
+    .credits {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--text-color);
+        font-size: 0.875rem;
+    }
+       .feedback-form {
+            padding: 2rem;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container" id="admin-app-container" style="display: none;">
+        <header>
+            <nav>
+                <a href="home.html">Home</a>
+                <a href="translation.html" target="_blank">translation</a>   <!-- Open in new tab -->
+                <a href="gender_predictor.html" target="_blank">Gender predictor</a>   <!-- Open in new tab -->
+                <a href="index.html">OCR App</a>
+                <a href="features.html" target="_blank">Key Features</a>
+                <a href="feedback.html" target="_blank">Feedback</a>
+                <a href="contact.html" target="_blank">Contact Us</a>
+                <a href="admin.html" class="active">Admin Panel</a>
+            </nav>
+             <button id="adminLogoutButton" class="logout-button button-secondary">
+                Logout
+            </button>
+            <h1>Hindi OCR Admin Panel</h1>
+            <p class="subtitle">Manage users and feedback for the Hindi OCR Application</p>
+            <p class="attribution">Powered by Sakshi's Hindi OCR Engine</p>
+
+        </header>
+
+        <div class="main-content">
+           <div class="container">
+                <h2> User Management</h2>
+                <div class="error-message" id="userErrorMessage"></div>
+                <div class = "feedback-form">
+                     <table class="admin-table" id="userTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Is Active</th>
+                                <th>Is Admin</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <tr><td colspan="6">Loading users...</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="admin-buttons" id="userPagination">
+                        <button id="prevUsers" disabled>< Previous</button>
+                        <button id="nextUsers">Next ></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <h2>Feedback Management</h2>
+                <div class="error-message" id="feedbackErrorMessage"></div>
+                <div class = "feedback-form">
+                     <table class="admin-table" id="feedbackTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Comment</th>
+                                <th>Created At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="feedbackTableBody">
+                            <tr><td colspan="4">Loading feedback...</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="admin-buttons" id="feedbackPagination">
+                        <button id="prevFeedback" disabled>< Previous</button>
+                        <button id="nextFeedback">Next ></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="credits">
+            <p>Powered by <strong>D SAKSHI</strong> (MCA Final Year BIT Durg, Chhattisgarh) | © SlimShadow Org. All Rights Reserved.</p>
+        </div>
+    </div>
+
+    <div id="login-container" style="display:flex; justify-content: center; align-items: center;">
+       <div class="container" id="admin-login-card">
+            <h2>Admin Login</h2>
+            <p>Login to access the Admin Panel.</p>
+            <div class="error-message" id="adminLoginErrorMessage"></div>
+             <label for="adminUsername">Username</label>
+            <input type="text" id="adminUsername" placeholder="Username" value="admin">
+             <label for="adminPassword">Password</label>
+            <input type="password" id="adminPassword" placeholder="Password" value="adminpassword">
+            <button id="adminLoginButton">Login</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://sameernotes-ocr.hf.space';
+        let adminAccessToken = null;
+        const adminAppContainer = document.getElementById('admin-app-container');
+        const loginContainer = document.getElementById('login-container');
+        const adminLoginCard = document.getElementById('admin-login-card');
+
+        // Admin Login Elements
+        const adminUsernameInput = document.getElementById('adminUsername');
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const adminLoginButton = document.getElementById('adminLoginButton');
+        const adminLoginErrorMessage = document.getElementById('adminLoginErrorMessage');
+        const adminLogoutButton = document.getElementById('adminLogoutButton');
+
+        // User Table Elements
+        const userTableBody = document.getElementById('userTableBody');
+        const userErrorMessage = document.getElementById('userErrorMessage');
+        const prevUsersButton = document.getElementById('prevUsers');
+        const nextUsersButton = document.getElementById('nextUsers');
+        let currentUserPage = 0;
+        const usersPerPage = 5; // Adjust as needed
+
+        // Feedback Table Elements
+        const feedbackTableBody = document.getElementById('feedbackTableBody');
+        const feedbackErrorMessage = document.getElementById('feedbackErrorMessage');
+        const prevFeedbackButton = document.getElementById('prevFeedback');
+        const nextFeedbackButton = document.getElementById('nextFeedback');
+        let currentFeedbackPage = 0;
+        const feedbackPerPage = 5; // Adjust as needed
+
+
+        adminLoginButton.addEventListener('click', async () => {
+            const username = adminUsernameInput.value;
+            const password = adminPasswordInput.value;
+
+             if (!username || !password) {
+               showAdminLoginError("Please fill in all fields.");
+                return;
+            }
+
+            const formData = new URLSearchParams();
+            formData.append('username', username);
+            formData.append('password', password);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/token`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: formData.toString()
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    showAdminLoginError(errorData.detail || "Login failed");
+                    return;
+                }
+
+                const data = await response.json();
+                adminAccessToken = data.access_token;
+                loginContainer.style.display = 'none';
+                adminAppContainer.style.display = 'block';
+                adminLoginErrorMessage.style.display = 'none';
+                loadUsers(); // Load users table after login
+                loadFeedback(); // Load feedback table after login
+
+
+            } catch (error) {
+                showAdminLoginError( "Error during login. Please try again.");
+                console.error("Admin Login error:", error);
+            }
+        });
+
+        adminLogoutButton.addEventListener('click', () => {
+            adminAccessToken = null;
+            adminAppContainer.style.display = 'none';
+            loginContainer.style.display = 'flex';
+             // Redirect to index.html
+            window.location.href = "index.html";
+        });
+
+
+        async function loadUsers() {
+            userTableBody.innerHTML = '<tr><td colspan="6">Loading users...</td></tr>';
+            userErrorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/users/?skip=${currentUserPage * usersPerPage}&limit=${usersPerPage}`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminAccessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showUserError( "Unauthorized: Admin access required.");
+                    } else {
+                        showUserError( `Failed to load users. Status: ${response.status}`);
+                    }
+                    userTableBody.innerHTML = '<tr><td colspan="6">Error loading users.</td></tr>';
+                    return;
+                }
+
+                const users = await response.json();
+                if (users.length === 0 && currentUserPage > 0) {
+                    currentUserPage--; // Adjust page if no users on current page and not on first page
+                    await loadUsers(); // Reload users with adjusted page
+                    return;
+                }
+                populateUserTable(users);
+
+
+            } catch (error) {
+                 showUserError("Error loading users. Please check console.");
+                userTableBody.innerHTML = '<tr><td colspan="6">Error loading users.</td></tr>';
+                console.error("Error fetching users:", error);
+            }
+        }
+
+        function populateUserTable(users) {
+            userTableBody.innerHTML = '';
+            if (users.length === 0) {
+                userTableBody.innerHTML = '<tr><td colspan="6">No users found.</td></tr>';
+                return;
+            }
+
+            users.forEach(user => {
+                const row = userTableBody.insertRow();
+                row.insertCell(0).textContent = user.id;
+                row.insertCell(1).textContent = user.username;
+                row.insertCell(2).textContent = user.email;
+                row.insertCell(3).textContent = user.is_active ? 'Yes' : 'No';
+                row.insertCell(4).textContent = user.is_admin ? 'Yes' : 'No';
+                const actionsCell = row.insertCell(5);
+                actionsCell.innerHTML = `<button class="button-secondary" onclick="deleteUser(${user.id})">Delete</button>`;
+            });
+
+            // Update pagination button states
+            prevUsersButton.disabled = currentUserPage === 0;
+            nextUsersButton.disabled = users.length < usersPerPage; // Disable if fewer users than per page, assuming last page
+        }
+
+        prevUsersButton.addEventListener('click', async () => {
+            if (currentUserPage > 0) {
+                currentUserPage--;
+                await loadUsers();
+            }
+        });
+
+        nextUsersButton.addEventListener('click', async () => {
+            currentUserPage++;
+            await loadUsers();
+        });
+
+
+        async function deleteUser(userId) {
+            if (confirm(`Are you sure you want to delete user ID ${userId}?`)) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${adminAccessToken}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                         showUserError( errorData.detail || `Failed to delete user. Status: ${response.status}`);
+                        return;
+                    }
+
+                    userErrorMessage.style.display = 'none';
+                    alert(`User ID ${userId} deleted successfully.`);
+                    loadUsers(); // Reload user list
+                } catch (error) {
+                    showUserError("Error deleting user. Please check console.");
+                    console.error("Error deleting user:", error);
+                }
+            }
+        }
+
+
+        async function loadFeedback() {
+            feedbackTableBody.innerHTML = '<tr><td colspan="4">Loading feedback...</td></tr>';
+            feedbackErrorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/feedback/?skip=${currentFeedbackPage * feedbackPerPage}&limit=${feedbackPerPage}`, {
+                    headers: {
+                        'Authorization': `Bearer ${adminAccessToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        showFeedbackError( "Unauthorized access.");
+                    } else {
+                        showFeedbackError(  `Failed to load feedback. Status: ${response.status}`);
+                    }
+                    feedbackTableBody.innerHTML = '<tr><td colspan="4">Error loading feedback.</td></tr>';
+                    return;
+                }
+
+                const feedbackData = await response.json();
+                if (feedbackData.length === 0 && currentFeedbackPage > 0) {
+                    currentFeedbackPage--;
+                    await loadFeedback();
+                    return;
+                }
+                populateFeedbackTable(feedbackData);
+
+
+            } catch (error) {
+                showFeedbackError("Error loading feedback. Please check console.");
+                feedbackTableBody.innerHTML = '<tr><td colspan="4">Error loading feedback.</td></tr>';
+                console.error("Error fetching feedback:", error);
+            }
+        }
+
+        function populateFeedbackTable(feedbackData) {
+            feedbackTableBody.innerHTML = '';
+            if (feedbackData.length === 0) {
+                feedbackTableBody.innerHTML = '<tr><td colspan="4">No feedback found.</td></tr>';
+                return;
+            }
+
+            feedbackData.forEach(feedback => {
+                const row = feedbackTableBody.insertRow();
+                row.insertCell(0).textContent = feedback.id;
+                row.insertCell(1).textContent = feedback.username;
+                row.insertCell(2).textContent = feedback.comment;
+                row.insertCell(3).textContent = new Date(feedback.created_at).toLocaleString();
+            });
+
+            prevFeedbackButton.disabled = currentFeedbackPage === 0;
+            nextFeedbackButton.disabled = feedbackData.length < feedbackPerPage;
+        }
+
+
+        prevFeedbackButton.addEventListener('click', async () => {
+            if (currentFeedbackPage > 0) {
+                currentFeedbackPage--;
+                await loadFeedback();
+            }
+        });
+
+        nextFeedbackButton.addEventListener('click', async () => {
+            currentFeedbackPage++;
+            await loadFeedback();
+        });
+
+      function showAdminLoginError(message) {
+        adminLoginErrorMessage.textContent = message;
+        adminLoginErrorMessage.style.display = 'block';
+        setTimeout(() => {
+            adminLoginErrorMessage.style.display = 'none';
+        }, 5000); // Hide after 5 seconds
+
+    }
+      function showUserError(message) {
+            userErrorMessage.textContent = message;
+            userErrorMessage.style.display = 'block';
+              setTimeout(() => {
+                userErrorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        function showFeedbackError(message) {
+            feedbackErrorMessage.textContent = message;
+            feedbackErrorMessage.style.display = 'block';
+            setTimeout(() => {
+                feedbackErrorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // --- Initial Check for Admin Token ---
+        // For simplicity, always start at admin login for this example
+        loginContainer.style.display = 'flex';
+        adminAppContainer.style.display = 'none';
+
+
+    </script>
+</body>
+</html>

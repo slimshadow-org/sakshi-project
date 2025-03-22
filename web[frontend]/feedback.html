@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hindi OCR App - Feedback</title>
+   <style>
+        /* ---  REUSABLE STYLES (from translation.html) --- */
+        :root {
+            --primary-color: #4a90e2;  /*  Consistent primary color */
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Consistent font */
+            line-height: 1.6;
+            color: var(--text-color);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* Consistent background */
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        textarea, input[type="text"], input[type="password"], input[type="email"]  {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 2px solid #e1e8ed;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus  {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        button {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+        /* --- ERROR MESSAGE --- */
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-top: 1rem;
+            display: none; /* Hidden by default */
+        }
+        /* --- BUTTONS --- */
+        .button-secondary {
+            background-color: var(--secondary-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+             width: auto;
+        }
+        .button-secondary:hover {
+            background-color: rgba(74, 144, 226, 0.1);
+            box-shadow: 0 5px 15px rgba(74, 144, 226, 0.3);
+        }
+          /* --- NAVIGATION BAR --- */
+        nav {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+            gap: 1rem;
+            justify-content: center; /* Center items */
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 1rem;
+        }
+        nav a {
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+        nav a:hover {
+            background-color: rgba(74, 144, 226, 0.1);
+        }
+         nav a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+           .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+
+        .attribution {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+        }
+/* --- LOGOUT BUTTON --- */
+        .logout-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: auto; /* Let the button size itself based on content */
+        }
+
+        .logout-button svg {
+            margin-right: 0.5rem;
+        }
+         .feedback-form {
+            padding: 2rem;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 2rem;
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+              nav {
+                justify-content: space-between; /* Adjust as needed */
+            }
+
+            nav a {
+                padding: 0.5rem; /* Smaller padding on mobile */
+            }
+        }
+    .credits {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--text-color);
+        font-size: 0.875rem;
+    }
+        .info-text {
+            color: #64748b;
+            margin-top: 0.5rem;
+              text-align: center; /* Center the message */
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+
+    </style>
+</head>
+<body>
+  <div class="container" id="app-container">
+    <header>
+      <nav>
+        <a href="home.html">Home</a>
+         <a href="translation.html" target="_blank">translation</a>   <!-- Open in new tab -->
+        <a href="gender_predictor.html" target="_blank">Gender predictor</a>   <!-- Open in new tab -->
+        <a href="index.html">OCR App</a>
+        <a href="features.html">Key Features</a>
+        <a href="feedback.html" class="active">Feedback</a>
+        <a href="contact.html">Contact Us</a>
+         <a href="admin.html" target="_blank">Admin</a>   <!-- Open in new tab -->
+      </nav>
+       <button id="logoutButton" class="logout-button button-secondary">
+                Logout
+            </button>
+      <h1>Hindi OCR Application</h1>
+      <p class="subtitle">Share your feedback to help us improve</p>
+      <p class="attribution">Powered by Sakshi's Hindi OCR Engine</p>
+    </header>
+
+    <div class="main-content">
+      <div class="container" id="feedback">
+        <h2>Feedback</h2>
+        <div class="feedback-form">
+          <p>We appreciate your feedback! Please let us know your thoughts on the application.</p>
+          <label for="feedbackText">Feedback</label>
+          <textarea id="feedbackText" placeholder="Your feedback here..."></textarea>
+          <button id="submitFeedback" >Submit Feedback</button>
+          <p class="info-text" id="feedbackMessage"></p>
+        </div>
+        <!-- Removed login status message as login is not required -->
+      </div>
+    </div>
+
+    <div class="credits">
+      <p>
+        Powered by <strong>D SAKSHI</strong> (MCA Final Year BIT Durg, Chhattisgarh) |
+        © SlimShadow Org. All Rights Reserved.
+      </p>
+    </div>
+  </div>
+
+  <script>
+      const API_BASE_URL = 'https://sameernotes-ocr.hf.space';
+        const logoutButton = document.getElementById('logoutButton');
+      const submitFeedbackButton = document.getElementById('submitFeedback');
+      const feedbackText = document.getElementById('feedbackText');
+      const feedbackMessage = document.getElementById('feedbackMessage');
+    document.getElementById("logoutButton").addEventListener("click", function() {
+    window.location.href = "index.html"; // Redirects to index.html in the same directory
+  });
+
+ // Feedback Submission without requiring a login token
+ if (submitFeedbackButton) {
+      submitFeedbackButton.addEventListener('click', async () => {
+        const comment = feedbackText.value.trim();
+
+        if (!comment) {
+           showFeedbackMessage('Please enter your feedback.', 'red');
+          return;
+        }
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/feedback/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            // Default the username to "Anonymous"
+            body: JSON.stringify({ username: "Anonymous", comment: comment })
+          });
+
+          if (response.ok) {
+             showFeedbackMessage('Feedback submitted successfully! Thank you.', 'green');
+            feedbackText.value = ''; // Clear input after successful submission
+          } else {
+            const errorData = await response.json();
+             showFeedbackMessage( `Error: ${errorData.detail || 'Failed to submit feedback.'}`, 'red');
+
+          }
+        } catch (error) {
+           showFeedbackMessage("Error submitting feedback. Please try again.", 'red');
+          console.error("Feedback submission error:", error);
+        }
+      });
+    }
+      function showFeedbackMessage(message, color) {
+        feedbackMessage.textContent = message;
+        feedbackMessage.style.color = color;
+         setTimeout(() => {
+            feedbackMessage.textContent = ''; // Clear the message
+            feedbackMessage.style.color = ''; // Reset color
+        }, 5000); // Message disappears after 5 seconds
+    }
+
+  </script>
+</body>
+</html>

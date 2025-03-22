@@ -1,0 +1,114 @@
+you have to give code for fast api translation app using this google geminni documentation
+    
+    import base64
+import os
+from google import genai
+from google.genai import types
+
+
+def generate():
+    client = genai.Client(
+        api_key=os.environ.get("GEMINI_API_KEY"),
+    )
+
+    model = "gemini-2.0-flash-lite"
+    contents = [
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text="""hii my name is rahul"""),
+            ],
+        ),
+        types.Content(
+            role="model",
+            parts=[
+                types.Part.from_text(text="""Okay! The text you provided is in English.
+
+Now, tell me which language you'd like me to translate it to. Please choose from one of the following options and reply with the corresponding number:
+
+1.  Hindi
+2.  Telugu
+3.  Marathi
+4.  Bengali
+5.  Tamil
+"""),
+            ],
+        ),
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text="""2"""),
+            ],
+        ),
+        types.Content(
+            role="model",
+            parts=[
+                types.Part.from_text(text="""Alright! Translating \"Hi, my name is Rahul\" to Telugu.
+
+The Telugu translation is:  **హాయ్, నా పేరు రాహుల్.** (pronounced: *Haay, naa peru Rahul*)
+"""),
+            ],
+        ),
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text="""mera naam sameer hai"""),
+            ],
+        ),
+        types.Content(
+            role="model",
+            parts=[
+                types.Part.from_text(text="""Okay! The text \"mera naam sameer hai\" is in Hindi.
+
+Now, please tell me which language you'd like me to translate it to. Choose from the following options and reply with the corresponding number:
+
+1.  English
+2.  Telugu
+3.  Marathi
+4.  Bengali
+5.  Tamil
+"""),
+            ],
+        ),
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text="""5"""),
+            ],
+        ),
+        types.Content(
+            role="model",
+            parts=[
+                types.Part.from_text(text="""Okay! Translating \"mera naam sameer hai\" (which is in Hindi) to Tamil.
+
+The Tamil translation is: **என் பெயர் சமீீர்.** (En peyar Sameer.)
+"""),
+            ],
+        ),
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text="""INSERT_INPUT_HERE"""),
+            ],
+        ),
+    ]
+    generate_content_config = types.GenerateContentConfig(
+        temperature=1,
+        top_p=0.95,
+        top_k=40,
+        max_output_tokens=8192,
+        response_mime_type="text/plain",
+        system_instruction=[
+            types.Part.from_text(text="""your task is to convert or translate languages to user disired preference for example user first feed the text you should tell me what the text is (for example english) then ask the user which language you have to translate to for example give 5 option if it is english 1. hindi, 2 telugu  3. marathi 4 bengali  5 tamil ask him to reply with number"""),
+        ],
+    )
+
+    for chunk in client.models.generate_content_stream(
+        model=model,
+        contents=contents,
+        config=generate_content_config,
+    ):
+        print(chunk.text, end="")
+
+if __name__ == "__main__":
+    generate()
